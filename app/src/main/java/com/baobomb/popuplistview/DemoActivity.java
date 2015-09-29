@@ -28,7 +28,7 @@ public class DemoActivity extends Activity {
                 @Override
                 public void setViewsElements(View view) {
                     TextView textView = (TextView) view.findViewById(R.id.title);
-                    textView.setText("123");
+                    textView.setText("123456789");
                 }
 
                 @Override

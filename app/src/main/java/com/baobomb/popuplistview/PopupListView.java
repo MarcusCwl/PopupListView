@@ -27,6 +27,8 @@ public class PopupListView extends RelativeLayout {
     int startY;
     int moveY = 0;
     int heightSpace = 0;
+    int innerViewAlphaVal = 0;
+    int listViewAlphaVal = 10;
 
     public PopupListView(Context context, AttributeSet attributeSet) {
         super(context, attributeSet);
@@ -68,10 +70,9 @@ public class PopupListView extends RelativeLayout {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
             //TODO GET POSITION AND START ANIMATION
-            int height = view.getMeasuredHeight();
             int[] p = new int[2];
             view.getLocationOnScreen(p);
-            startY = p[1]-heightSpace;
+            startY = p[1] - heightSpace;
             moveY = startY;
             zoomIn(i, startY);
         }
@@ -86,13 +87,12 @@ public class PopupListView extends RelativeLayout {
         extendInnerView.setVisibility(GONE);
         extendView.addView(extendInnerView);
         extendView.setVisibility(VISIBLE);
-        handler.postDelayed(zommInRunnable,100);
+        handler.postDelayed(zoomInRunnable, 100);
     }
 
     public void zoomOut() {
-        extendInnerView.setVisibility(GONE);
-        handler.removeCallbacks(zommInRunnable);
-        handler.postDelayed(zommOutRunnable, 1);
+        handler.removeCallbacks(zoomInRunnable);
+        handler.postDelayed(zoomOutRunnable, 1);
     }
 
     public boolean isItemZoomIn() {
@@ -103,34 +103,70 @@ public class PopupListView extends RelativeLayout {
         }
     }
 
-    public Runnable zommInRunnable = new Runnable() {
+    public Runnable zoomInRunnable = new Runnable() {
         @Override
         public void run() {
-            if (moveY > 0) {
-                moveY-= startY/10;
-                extendPopupView.setY(moveY);
-                handler.postDelayed(zommInRunnable,1);
-            }else{
-                extendPopupView.setY(0);
-                extendInnerView.setVisibility(VISIBLE);
+            if (listViewAlphaVal >= 0) {
+                listView.setAlpha(listViewAlphaVal * 0.1f);
+                listViewAlphaVal--;
+                handler.postDelayed(zoomInRunnable, 10);
+            } else {
+                if (listView.getVisibility() != GONE) {
+                    listView.setVisibility(GONE);
+                }
+                if (moveY > 0) {
+                    moveY -= startY / 10;
+                    extendPopupView.setY(moveY);
+                    handler.postDelayed(zoomInRunnable, 10);
+                } else {
+                    extendPopupView.setY(0);
+                    if (innerViewAlphaVal < 10) {
+                        extendInnerView.setAlpha(innerViewAlphaVal * 0.1f);
+                        extendInnerView.setVisibility(VISIBLE);
+                        innerViewAlphaVal++;
+                        handler.postDelayed(zoomInRunnable, 10);
+                    }
+                }
             }
         }
     };
 
-    public Runnable zommOutRunnable = new Runnable() {
+    public Runnable zoomOutRunnable = new Runnable() {
         @Override
         public void run() {
-            if (moveY < startY) {
-                moveY += (startY)/10;
-                extendPopupView.setY(moveY);
-                handler.postDelayed(zommOutRunnable,1);
-            }else {
-                extendPopupView.setY(startY);
-                extendView.setVisibility(GONE);
-                extendView.removeAllViews();
-                extendPopupView = null;
-                listView.setVisibility(VISIBLE);
+
+            if (innerViewAlphaVal > 0) {
+                extendInnerView.setAlpha(innerViewAlphaVal * 0.1f);
+                innerViewAlphaVal--;
+                handler.postDelayed(zoomOutRunnable, 1);
+            } else {
+                if (extendInnerView.getVisibility() != GONE) {
+                    extendInnerView.setVisibility(GONE);
+                }
+                if (moveY < startY) {
+                    moveY += (startY) / 10;
+                    extendPopupView.setY(moveY);
+                    handler.postDelayed(zoomOutRunnable, 10);
+                } else {
+                    if (listViewAlphaVal < 10) {
+                        listViewAlphaVal++;
+                        if (listView.getVisibility() == GONE) {
+                            listView.setVisibility(VISIBLE);
+                        }
+                        listView.setAlpha(listViewAlphaVal * 0.1f);
+                        handler.postDelayed(zoomOutRunnable, 10);
+                    }else{
+                        if (extendPopupView != null) {
+                            extendPopupView.setY(startY);
+                            extendView.setVisibility(GONE);
+                            extendView.removeAllViews();
+                            extendPopupView = null;
+                        }
+                    }
+                }
             }
+
+
         }
     };
 
@@ -147,6 +183,6 @@ public class PopupListView extends RelativeLayout {
         if (resourceId > 0) {
             result = getResources().getDimensionPixelSize(resourceId);
         }
-        this.heightSpace = actionBarHeight+result;
+        this.heightSpace = actionBarHeight + result;
     }
 }

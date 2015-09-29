@@ -80,6 +80,9 @@ public class PopupListView extends RelativeLayout {
 
     public void zoomIn(int i, int startY) {
         listView.setVisibility(GONE);
+        if (extendPopupView != null) {
+            extendPopupView = null;
+        }
         extendPopupView = ((PopupView) popupListAdapter.getItem(i)).getExtendPopupView();
         extendInnerView = ((PopupView) popupListAdapter.getItem(i)).getExtendView();
         extendView.addView(extendPopupView);
@@ -155,7 +158,7 @@ public class PopupListView extends RelativeLayout {
                         }
                         listView.setAlpha(listViewAlphaVal * 0.1f);
                         handler.postDelayed(zoomOutRunnable, 10);
-                    }else{
+                    } else {
                         if (extendPopupView != null) {
                             extendPopupView.setY(startY);
                             extendView.setVisibility(GONE);

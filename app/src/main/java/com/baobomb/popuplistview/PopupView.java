@@ -13,13 +13,16 @@ public abstract class PopupView {
     LayoutInflater layoutInflater;
     int resId;
     View view;
+    View extendPopupView;
     View extendView;
 
     public PopupView(Context context, int resId) {
         layoutInflater = LayoutInflater.from(context);
         this.resId = resId;
         view = layoutInflater.inflate(resId, null);
+        extendPopupView = layoutInflater.inflate(resId,null);
         setViewsElements(view);
+        setViewsElements(extendPopupView);
         ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams
                 .MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         extendView = setExtendView(extendView);
@@ -31,8 +34,6 @@ public abstract class PopupView {
     }
 
     public View getExtendPopupView() {
-        View extendPopupView = layoutInflater.inflate(resId, null);
-        setViewsElements(extendPopupView);
         return extendPopupView;
     }
 

@@ -68,10 +68,13 @@ Then collect all the popupviews design by yourself
 After you collect all the popup list item then set it to the PopupListView
 
         PopupListView popupListView = (PopupListView) findViewById(R.id.popupListView);
-    //if you want to custom the listview's parent layout
-      you can init it and set the custom view layout res id to it
-      or just set it null then it will use the default layout
-        popupListView.init(null); 
+        
+if you want to custom the listview's parent layout you can init it and set the custom view layout res id to it
+or just set it null then it will use the default layout,
+
+        //isWithActionBar : default = false , if your app have an actionBar, set it true;
+        //isWithStatusBar : default = true , if your app is set as full screen and status bar dismiss, set it false.
+        popupListView.init(View customListBackground,Boolean isWithActionBar,Boolean isWithStatusBar); 
         popupListView.setItemViews(popupViews);
         
 Then you can use it amazing!!
